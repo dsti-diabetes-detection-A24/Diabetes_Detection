@@ -1,190 +1,247 @@
-# Project Overview
 
-## Goal
-The primary goal of this project is to build a machine learning model to predict diabetic outcomes using the provided dataset. The model will be evaluated and compared with the PIMA dataset to ensure the coherence and reliability of our dataset.
+# Yohann's job on the projects
+## Exploratory Data Analysis (EDA)
 
-## Steps Involved
-1. **Import Required Libraries**: Import necessary libraries such as pandas, numpy, matplotlib, seaborn, and scikit-learn.
-2. **Load the Dataset**: Load the dataset into a pandas DataFrame for analysis.
-3. **Data Preprocessing**: Handle missing values, detect and handle outliers, and perform feature scaling.
-4. **Exploratory Data Analysis (EDA)**: Perform EDA to understand the distribution and relationships of the features.
-5. **Comparison with PIMA Dataset**: Compare the dataset with the PIMA dataset to verify the coherence of our dataset.
-6. **Modeling**: Split the data into training and testing sets, train a machine learning model, and evaluate its performance.
-7. **Feature Engineering**: Create new features to improve the model's performance.
-8. **Model Evaluation**: Evaluate the model using various metrics and interpret the results.
-9. **Improvements**: Look for potential improvements in the model and the dataset.
+### Data Understanding and Quality Assessment
 
-# Data Collection and Import
+The diabetes detection project involved building a predictive model to identify diabetic patients using various health metrics. The process began with thorough data exploration of the TAIPEI diabetes dataset containing approximately 15,000 records across multiple features.
 
-## Explanation
-In this section, we will explain the process of collecting and importing the dataset. We will use the pandas library to read the CSV file containing the dataset. The dataset provides attributes for 15000 women on 8 features, and the variable to predict is the diabetic outcome.
+After importing necessary libraries and loading the dataset, I performed a comprehensive exploratory analysis. The initial statistical summary and correlation analysis revealed potentially suspicious patterns - the dataset appeared mathematically "too perfect." This observation led me to investigate deeper and cross-analyze relationships between variables.
 
-## Code
+Given that this is a medical dataset from a hospital environment, some extreme values might be expected. However, distinguishing between legitimate clinical outliers and data errors required domain knowledge. I systematically identified potential inconsistencies by defining logical rules based on medical principles and human physiology.
+
+### Inconsistency Detection
+
+I identified several problematic patterns in the dataset and we worked together to implement rules:
+
+1. **Age-Pregnancy Relationship**: Young women (≤25 years) with unusually high pregnancy counts (>5)
+2. **Implausible BMI Values**: Extreme BMI measurements outside realistic physiological ranges
+3. **Glucose-Insulin Relationship**: High plasma glucose (>200 mg/dL) with unexpectedly low insulin levels
+4. **Blood Pressure Anomalies**: Diastolic blood pressure readings below 40 mmHg or above 120 mmHg
+5. **Extreme Insulin Values**: Serum insulin measurements outside plausible clinical ranges
+
+### Code overview of cross-Validation with PIMA Dataset
+
+The TAIPEI dataset was compared with the established PIMA diabetes dataset from Kaggle to validate outlier concerns and ensure consistency across similar diabetes studies. The PIMA dataset serves as a reliable benchmark as it:
+
+- Comes from the National Institute of Diabetes and Digestive and Kidney Diseases
+- Has been widely used in diabetes research
+- Contains similar medical predictor variables
+- Has undergone rigorous validation
+
+The comparison confirmed that several observations in our dataset were indeed outliers beyond typical clinical variation. After consulting with instructor Dr. Christophe Bécavin, I proceeded with data cleaning based on the identified inconsistencies.
+
+#### Comparison Between TAIPEI and PIMA Diabetes Datasets
+
+##### 1. Dataset Loading and Column Alignment
+
 ```python
-# Import required libraries
-import pandas as pd
+# Import PIMA dataset
+pima_diabetes = pd.read_csv('ressources/kaggle/diabetes.csv')
 
-# Load the dataset into a pandas DataFrame
-diabetes_csv = pd.read_csv('data/TAIPEI_diabetes.csv')
-
-# Display the first few rows of the dataset to verify the import
-diabetes_csv.head()
+# Rename columns to match between datasets for comparison
+diabetes_csv_renamed = diabetes_csv.rename(columns={
+    'Diabetic': 'Outcome',
+    'DiastolicBloodPressure': 'BloodPressure',
+    'DiabetesPedigree': 'DiabetesPedigreeFunction',
+    'PlasmaGlucose': 'Glucose',
+    'SerumInsulin': 'Insulin',
+    'TricepsThickness': 'SkinThickness'
+})
 ```
 
-# Exploratory Data Analysis (EDA)
+The first step involved aligning column names between the two datasets to ensure valid comparisons, as they had different naming conventions.
 
-## Discuss the steps taken to explore the data, including checking for missing values, visualizing distributions, and identifying potential outliers.
+##### 2. Statistical Comparison
 
-### Checking for Missing Values
+The notebook calculates and compares basic statistical properties of both datasets:
+
 ```python
-# Check for missing values in the dataset
-missing_values = diabetes_csv.isna().sum()
-missing_values
+# Calculate min and max for both datasets
+pima_min_max = pima_diabetes.agg(['min', 'max']).T
+diabetes_min_max = diabetes_csv.agg(['min', 'max']).T
+
+# Join for comparison
+comparison = pima_min_max.join(diabetes_min_max)
 ```
 
-### Visualizing Distributions
+This comparison revealed differences in value ranges between the datasets, helping identify potential anomalies in the TAIPEI dataset.
+
+##### 3. Outlier Validation
+
+For each suspected outlier in the TAIPEI dataset, the notebook examines equivalent cases in the PIMA dataset to determine if they're truly anomalous or within expected ranges:
+
 ```python
-# Visualize the distribution of each feature using histograms
-import matplotlib.pyplot as plt
-import seaborn as sns
+# Row of max pregnancies for young individuals
+pima_diabetes[(pima_diabetes['Pregnancies'] == pima_diabetes['Pregnancies'].max()) & (pima_diabetes['Age'] < 25)]
 
-diabetes_csv.hist(figsize=(20, 10), bins=50, xlabelsize=8, ylabelsize=8)
-plt.show()
+# Row of plasma glucose above 160
+pima_diabetes[pima_diabetes['Glucose'] > 160].sort_values(by='Glucose', ascending=False)
+
+# Various other outlier checks for blood pressure, BMI, insulin, etc.
 ```
 
-### Identifying Potential Outliers
+This process allowed for identification of truly suspect values by comparing against a reference dataset from a similar population.
+
+##### 4. Distribution Visualization
+
+Side-by-side histograms were created to compare feature distributions between datasets:
+
 ```python
-# Use box plots to identify potential outliers in the numerical features
-numeric_cols = diabetes_csv.select_dtypes(include='number').columns
-
-for col in numeric_cols:
-    plt.figure(figsize=(8, 4))
-    sns.boxplot(x=diabetes_csv[col])
-    plt.title(f"Boxplot for {col}")
-    plt.show()
-
-# Calculate the IQR to identify outliers
-Q1 = diabetes_csv.quantile(0.25)
-Q3 = diabetes_csv.quantile(0.75)
-IQR = Q3 - Q1
-
-outliers = ((diabetes_csv < (Q1 - 1.5 * IQR)) | (diabetes_csv > (Q3 + 1.5 * IQR))).sum()
-outliers
-
-# Calculate Z-scores to identify outliers
-from scipy import stats
-import numpy as np
-
-z_scores = np.abs(stats.zscore(diabetes_csv.select_dtypes(include=[np.number])))
-outliers_z = (z_scores > 3).sum(axis=0)
-outliers_z
+# Define age bins and create two-panel histogram comparison
+fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(18, 6), sharey=True)
+axes[0].hist(diabetes_csv['Age'], bins=bins, edgecolor='black')
+axes[1].hist(pima_diabetes['Age'], bins=bins, edgecolor='black')
 ```
 
-## Comparison with PIMA Dataset
-In my EDA, I noticed some incoherence and excessive values like outliers but I wasn't sure, so I decided to compare our "describe" values to another dataset, the PIMA dataset, as a reference. Then I suggested to the group to remove some values.
+These visualizations helped identify structural differences between datasets, such as different age distributions and feature value concentrations.
 
-# Modeling
+##### 5. Model Comparison
 
-## Explanation
-In this section, we will detail the modeling process, including the choice of logistic regression, data preprocessing, splitting the data into training and testing sets, and training the model.
+The notebook builds identical logistic regression models on both datasets to compare predictive performance:
 
-### Choice of Logistic Regression
-Logistic regression is chosen for this project because it is a simple yet effective algorithm for binary classification problems. It provides probabilities for class membership and is easy to interpret.
-
-### Data Preprocessing
-We will preprocess the data by scaling the features to ensure that they are on the same scale. This helps improve the performance of the logistic regression model.
-
-### Splitting the Data
-We will split the data into training and testing sets to evaluate the model's performance on unseen data.
-
-### Training the Model
-We will train a logistic regression model using the training data and evaluate its performance using the testing data.
-
-## Code
 ```python
-# Import necessary libraries for modeling
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+# Train separate models for each dataset
+model_pima = LogisticRegression()
+model_pima.fit(X_pima_train, y_pima_train)
 
-# Drop unnecessary columns
-diabetes_csv = diabetes_csv.drop(columns=['PatientID'], errors='ignore')
+model_diabetes = LogisticRegression()
+model_diabetes.fit(X_diabetes_train, y_diabetes_train)
 
-# Separate features and target variable
-X = diabetes_csv.drop(columns=['Diabetic'])
-y = diabetes_csv['Diabetic']
-
-# Scale the features
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-
-# Split the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
-
-# Train a logistic regression model
-model = LogisticRegression()
-model.fit(X_train, y_train)
-
-# Make predictions
-y_pred = model.predict(X_test)
-
-# Evaluate the model
-accuracy = accuracy_score(y_test, y_pred)
-conf_matrix = confusion_matrix(y_test, y_pred)
-class_report = classification_report(y_test, y_pred)
-
-# Display the evaluation results
-print(f"Accuracy: {accuracy}")
-print("Confusion Matrix:")
-print(conf_matrix)
-print("Classification Report:")
-print(class_report)
+# Compare evaluation metrics
 ```
 
-## Handling Outliers in Modeling
-In my modeling, I tried to remove different possible outliers to see how it affects my model. This involved iterating through the data, removing outliers, and retraining the model to observe changes in performance.
+This model-based comparison revealed how data quality and distribution differences affect prediction capabilities.
 
-# Evaluation and Comparison with PIMA Dataset
+##### 6. Testing Data Cleaning Impact
 
-## Discuss the evaluation metrics used to assess the model's performance, including accuracy, precision, recall, and F1 score.
+The code tests how removing specific outliers affects model performance:
 
-### Evaluation Metrics
-In this section, we will discuss the evaluation metrics used to assess the performance of our logistic regression model. The metrics include accuracy, precision, recall, and F1 score.
+```python
+# Remove rows with anomalous values
+diabetes_csv_no_max_pregnancies = diabetes_csv.drop(diabetes_csv[(diabetes_csv['Pregnancies'] == diabetes_csv['Pregnancies'].max()) & (diabetes_csv['Age'] < 25)].index)
 
-- **Accuracy**: The proportion of correctly classified instances among the total instances.
-- **Precision**: The proportion of true positive instances among the instances predicted as positive.
-- **Recall**: The proportion of true positive instances among the actual positive instances.
-- **F1 Score**: The harmonic mean of precision and recall, providing a balance between the two.
-
-### Model Evaluation Results
-The evaluation results for our logistic regression model are as follows:
-
-- **Accuracy**: {accuracy}
-- **Confusion Matrix**:
-
-# Conclusion
-
-## Summary of Findings
-In this project, we aimed to build a machine learning model to predict diabetic outcomes using the provided dataset. We followed a structured approach, including data preprocessing, exploratory data analysis, feature engineering, modeling, and evaluation. The key findings and results are summarized below:
-
-### Data Preprocessing and EDA
-- We handled missing values and identified potential outliers using both the IQR and Z-score methods.
-- Visualizations such as histograms and box plots helped us understand the distribution of features and detect outliers.
-
-### Feature Engineering
-- We created new features such as age groups and BMI categories to improve the model's performance.
-- One-hot encoding was applied to convert categorical variables into numerical format.
-
-### Modeling
-- We chose logistic regression for its simplicity and effectiveness in binary classification problems.
-- The data was split into training and testing sets, and features were scaled to ensure uniformity.
-- The logistic regression model was trained and evaluated using various metrics.
-
-### Model Evaluation
-- The model achieved an accuracy of {accuracy}, with the following confusion matrix and classification report:
+# Build models on cleaned data to measure performance differences
 ```
 
+This systematic comparison iteration helped validate data quality and determine whether unusual values are genuine outliers or natural variations in the dataset.
 
+### Data Cleaning and Preparation
 
-1782208
+Rather than simply removing outliers, I applied a combination of techniques:
+- Identifying and removing biologically impossible combinations of values
+- Capping extreme values at the 8th and 92nd percentiles to preserve distribution shapes
+- Verifying data completeness after cleaning operations
+
+The cleaned dataset maintained its integrity while removing problematic observations that could potentially skew modeling results.
+
+## Feature Engineering
+
+After data cleaning, I enhanced the dataset with meaningful derived features to capture complex physiological relationships:
+
+### Age Group Categorization
+I transformed the continuous age variable into clinically relevant age categories:
+- 20-30 years
+- 31-40 years
+- 41-50 years
+- 51-60 years
+- 61-70 years
+- 71-80 years
+
+This transformation acknowledges that diabetes risk doesn't increase linearly with age but follows distinct patterns across different life stages. For example, type 2 diabetes risk significantly accelerates after age 45, and these categories enable the model to capture such non-linear relationships.
+
+### BMI Classification
+I converted BMI from a continuous measurement into standardized clinical categories according to WHO guidelines:
+- Underweight (<18.5)
+- Normal weight (18.5-24.9)
+- Overweight (25-29.9)
+- Obese Class I (30-34.9)
+- Obese Class II (35-39.9)
+- Obese Class III (≥40)
+
+This transformation incorporates established medical knowledge about risk thresholds, as diabetes risk increases disproportionately at specific BMI levels rather than continuously.
+
+### Glucose-Insulin Interaction
+I created an interaction term between plasma glucose and serum insulin to capture their physiological relationship, as insulin resistance (characterized by high glucose despite high insulin) is a key diabetes indicator.
+
+### Metabolic Risk Score
+I developed a composite score combining BMI, blood pressure, and glucose values to create a holistic metabolic risk indicator. This feature captures the cumulative effect of multiple risk factors that might individually fall below diagnostic thresholds.
+
+### Feature Encoding and Transformation
+For implementation in machine learning models:
+- Categorical features were one-hot encoded
+- Skewed numerical features underwent log transformation to normalize their distributions
+- All features were standardized using MinMaxScaler to ensure equal contribution to the model
+
+Additionally, I applied SMOTE (Synthetic Minority Over-sampling Technique) to address the class imbalance between diabetic and non-diabetic samples, creating a balanced dataset for more effective modeling.
+
+### Impact on Model Performance
+These feature engineering techniques substantially improved model performance:
+- Accuracy increased from 79% to 84%
+- Recall for diabetic cases (sensitivity) improved from 56% to 69%
+- Precision for diabetic predictions increased from 73% to 80%
+- F1-score improved from 63% to 74%
+
+Most notably, the age group and BMI category features demonstrated high importance in the final model, confirming that the categorical transformation of these variables effectively captured critical threshold effects that would have been less apparent with continuous variables.
+
+These preprocessing steps and feature engineering techniques significantly improved the dataset quality and prepared it for the subsequent modeling phase.
+
+## Logistic Regression Model for Diabetes Detection
+
+### Team Approach to Modeling
+
+As part of our comprehensive approach to the Diabetes Detection project, our team decided to evaluate multiple machine learning models to identify the most effective one for predicting diabetes. Each team member was assigned a different model to implement, evaluate, and present. I was specifically responsible for developing and analyzing the **logistic regression** model as my contribution to our comparative study.
+
+### Why Logistic Regression?
+
+Logistic regression was selected as a baseline model for several key reasons:
+
+1. **Binary Classification Problem**: Since we're predicting whether a patient has diabetes (1) or not (0), logistic regression is specifically designed for such binary outcomes, unlike linear regression which predicts continuous values.
+
+2. **Interpretability**: Unlike "black box" models, logistic regression provides clear coefficients that can be interpreted as the log-odds impact of each feature, which is particularly valuable in healthcare applications where understanding feature importance is crucial.
+
+3. **Probabilistic Output**: Rather than simply classifying patients, logistic regression provides probability estimates of having diabetes, allowing for threshold adjustments based on sensitivity/specificity requirements.
+
+4. **Medical Research Standard**: Logistic regression has a long history of use in epidemiological studies and medical research, making results more accessible to healthcare professionals.
+
+### Implementation Process
+
+The implementation of the logistic regression model followed a structured approach:
+
+1. **Feature Engineering**: Created meaningful derived features from raw data:
+   - Age groups (20-30, 31-40, 41-50, 51-60, 61-70, 71-80) to capture non-linear age effects
+   - BMI categories (Underweight, Normal, Overweight, Obese) based on standard medical classifications
+   - One-hot encoded these categorical variables to make them suitable for the model
+
+2. **Data Preprocessing**:
+   - Standardized numerical features using StandardScaler to ensure equal contribution from all variables
+   - Applied SMOTE (Synthetic Minority Over-sampling Technique) to address class imbalance between diabetic and non-diabetic patients
+
+3. **Model Training and Evaluation**:
+   - Split the data into training (80%) and testing (20%) sets
+   - Fitted the logistic regression model and evaluated using accuracy, confusion matrix, and classification report
+   - Analyzed feature coefficients to understand the impact of each variable on diabetes prediction
+
+### Advantages of Logistic Regression
+
+Our implementation highlighted several advantages of logistic regression:
+
+- **Computational Efficiency**: The model trained quickly even on our large dataset of 15,000 records
+- **Feature Importance Analysis**: We could directly interpret which factors most strongly influence diabetes risk
+- **Balanced Performance**: The model achieved respectable accuracy (~78%) while maintaining balance between precision and recall
+- **Simplicity**: The straightforward implementation allowed us to focus on feature engineering rather than complex model tuning
+
+### Limitations of Logistic Regression
+
+Despite its strengths, we also recognized several limitations:
+
+- **Linear Decision Boundary**: Logistic regression assumes a linear relationship between features and log-odds, potentially missing complex interactions between variables
+- **Limited Capacity for Non-Linear Relationships**: Despite our feature engineering efforts to capture non-linearity through categorical variables, more complex relationships might still be missed
+- **Sensitivity to Outliers**: Our data exploration revealed several extreme values (particularly in insulin levels) that could disproportionately influence the model
+- **Assumption of Feature Independence**: The model doesn't naturally account for correlations between predictors like BMI and blood pressure
+
+## Contribution to Final Model Selection
+
+This logistic regression implementation served as an excellent baseline model against which other more complex models (random forests, gradient boosting, neural networks) could be compared. The interpretability of its coefficients provided valuable insights about feature importance that informed feature selection in other models.
+
+The final team decision on which model to adopt balanced predictive performance with interpretability requirements, computational efficiency, and other project-specific considerations across all the models evaluated by team members.
