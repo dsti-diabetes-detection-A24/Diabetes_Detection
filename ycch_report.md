@@ -1,5 +1,33 @@
 
 # Yohann's job on the projects
+
+## Project Management
+
+### Coordination and Documentation Framework
+
+For this diabetes detection project, I established a structured project management approach to ensure efficient collaboration and timely delivery:
+
+- **Documentation Infrastructure**: Initiated the creation of our comprehensive project report on Overleaf, providing a collaborative LaTeX environment where all team members could simultaneously contribute to and review documentation in real-time.
+
+- **Agile Methodology**: Proposed and implemented an Agile workflow with weekly sprint cycles to maintain consistent progress. This approach allowed us to:
+    - Set incremental goals with clear deliverables
+    - Adapt quickly to challenges and insights discovered during analysis
+    - Maintain visibility of progress across all workstreams
+
+- **Communication Structure**: Created a dedicated Microsoft Teams channel serving as our central collaboration hub for:
+    - Code sharing and review
+    - Dataset discussions
+    - Model performance updates
+    - Resource distribution
+
+- **Regular Synchronization**: Established a recurring weekly meeting every Sunday afternoon at 4:00 PM to:
+    - Review completed tasks and deliverables
+    - Address blockers and technical challenges
+    - Align on priorities for the upcoming week
+    - Ensure consistent understanding of project direction
+
+This structured approach ensured all team members remained aligned throughout the project lifecycle while maintaining flexibility to incorporate new insights as they emerged from data exploration and model development.
+
 ## Exploratory Data Analysis (EDA)
 
 ### Data Understanding and Quality Assessment
