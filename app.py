@@ -72,28 +72,7 @@ with gr.Blocks(css="""
     .btn:hover { opacity: 0.8; }
     .container { text-align: center; margin-bottom: 15px; }
     .card { background: rgba(255, 255, 255, 0.1); padding: 25px; border-radius: 12px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5); }
-""") as demo:
-
-    # Inject JS to toggle dark mode
-    gr.HTML("""
-        <script>
-            function toggleDarkMode() {
-                const body = document.body;
-                if (body.classList.contains("dark-mode")) {
-                    body.classList.remove("dark-mode");
-                    body.classList.add("light-mode");
-                } else {
-                    body.classList.remove("light-mode");
-                    body.classList.add("dark-mode");
-                }
-            }
-        </script>
-    """)
-
-    with gr.Row():
-        dark_mode_btn = gr.Button("🌙 Dark Mode", elem_classes="btn-darkmode", elem_id="darkmode-btn", variant="secondary")
-
-        dark_mode_btn.click(fn=lambda: gr.HTML("<script>toggleDarkMode();</script>"), inputs=[], outputs=[])
+""") as demo:    
 
     gr.HTML("""
         <div class="container">
