@@ -4,12 +4,28 @@ import pickle
 import gradio as gr
 import time
 
-# Load the model
-with open("model.pkl", "rb") as file:
-    model = pickle.load(file)
+# Load the models
+with open("svm_model.pkl", "rb") as file:
+    svm_model = pickle.load(file)
+
+with open("ada_boost_model.pkl", "rb") as file:
+    ada_model = pickle.load(file)
+
+with open("log_model.pkl", "rb") as file:
+    log_reg_model = pickle.load(file)
+
+with open("knn_model.pkl", "rb") as file:
+    knn_model = pickle.load(file)
+
+with open("decision_tree_model.pkl", "rb") as file:
+    desc_tree_model = pickle.load(file)
+
+# Loading the scaler for the Logistic Regression model
+with open("log_scaler.pkl", "rb") as file:
+    log_scaler = pickle.load(file)
 
 # Prediction function with input validation
-def svm_predictor(pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum_insulin, bmi, diabetes_pedigree, age):
+def predictor(pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum_insulin, bmi, diabetes_pedigree, age, model):
     inputs = [pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum_insulin, bmi, diabetes_pedigree, age]
     
     # Check if any input is empty
@@ -18,7 +34,24 @@ def svm_predictor(pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, s
     
     time.sleep(2)  # Simulate processing time
     params = np.array([inputs])
-    prediction = model.predict(params)
+    if model == "SVM":
+        chosen_model = svm_model
+
+    elif model == "KNN":
+        chosen_model = knn_model
+
+    elif model == "Ada Boost":
+        chosen_model = ada_model
+
+    elif model == "Decision Tree":
+        chosen_model = desc_tree_model
+
+    elif model == "Logistic Regression":
+        chosen_model = log_reg_model
+        inputs = log_scaler.transform([inputs]) # Scaling the inputs
+        params = inputs
+
+    prediction = chosen_model.predict(params)
     
     return "✅ Positive" if prediction[0] > 0.5 else "❌ Negative"
 
@@ -90,6 +123,8 @@ with gr.Blocks(css="""
                 bmi = gr.Number(label="Body Mass Index (kg/m²)", interactive=True)
                 diabetes_pedigree = gr.Number(label="Diabetes Pedigree Function", interactive=True)
                 age = gr.Number(label="Age (years)", interactive=True)
+    with gr.Row():
+        model_type = gr.Dropdown(["SVM", "Logistic Regression", "Decision Tree", "KNN", "Ada Boost"], label="Model Name")
 
     with gr.Row():
         predict = gr.Button("🔍 Predict", elem_classes="btn btn-predict")
@@ -107,8 +142,8 @@ with gr.Blocks(css="""
         inputs=[],
         outputs=loading_message
     ).then(
-        fn=svm_predictor,
-        inputs=[pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum_insulin, bmi, diabetes_pedigree, age],
+        fn=predictor,
+        inputs=[pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum_insulin, bmi, diabetes_pedigree, age, model_type],
         outputs=output
     ).then(
         fn=lambda: "",
