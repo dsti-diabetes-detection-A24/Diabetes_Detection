@@ -20,6 +20,10 @@ with open("knn_model.pkl", "rb") as file:
 with open("decision_tree_model.pkl", "rb") as file:
     desc_tree_model = pickle.load(file)
 
+with open("random_forest.pkl", "rb") as file:
+    random_forest = pickle.load(file)
+
+
 # Loading the scaler for the Logistic Regression model
 with open("log_scaler.pkl", "rb") as file:
     log_scaler = pickle.load(file)
@@ -32,8 +36,12 @@ def predictor(pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum
     if any(not isinstance(val, (int, float)) for val in inputs):
         return "⚠️ Error: Please fill in all fields Correctly."
     
+    if model not in ["SVM", "KNN", "Ada Boost", "Decision Tree", "Logistic Regression", "Random Forest"]:
+        return "⚠️ Error: Please choose a valid Model"
+    
     time.sleep(2)  # Simulate processing time
     params = np.array([inputs])
+
     if model == "SVM":
         chosen_model = svm_model
 
@@ -50,6 +58,11 @@ def predictor(pregnancies, plasmaglucose, diastolic_bp, triceps_thickness, serum
         chosen_model = log_reg_model
         inputs = log_scaler.transform([inputs]) # Scaling the inputs
         params = inputs
+
+    elif model == "Random Forest":
+        chosen_model = random_forest
+
+
 
     prediction = chosen_model.predict(params)
     
@@ -103,7 +116,7 @@ with gr.Blocks(css="""
                 diabetes_pedigree = gr.Number(label="Diabetes Pedigree Function", interactive=True)
                 age = gr.Number(label="Age (years)", interactive=True)
     with gr.Row():
-        model_type = gr.Dropdown(["SVM", "Logistic Regression", "Decision Tree", "KNN", "Ada Boost"], label="Model Name")
+        model_type = gr.Dropdown(["SVM", "Logistic Regression", "Decision Tree", "KNN", "Ada Boost", "Random Forest"], label="Model Name")
 
     with gr.Row():
         predict = gr.Button("🔍 Predict", elem_classes="btn btn-predict")
