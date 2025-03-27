@@ -21,15 +21,21 @@ This project uses several machine learning algorithms to predict the likelihood 
 
 ## 💾 Dataset
 
-The project uses the Pima Indians Diabetes Dataset, containing these features:
-- 🤰 Number of pregnancies
-- 🩸 Plasma glucose concentration
-- ❤️ Diastolic blood pressure
-- 📏 Triceps skin fold thickness
-- 💉 2-Hour serum insulin
-- ⚖️ Body mass index (BMI)
-- 👪 Diabetes pedigree function
-- 🗓️ Age
+## 💾 Dataset
+
+The project uses the TAIPEI_diabetes.csv dataset, containing health metrics for 15000 women with these features:
+
+- 🤰 Pregnancies: Number of times pregnant
+- 🩸 PlasmaGlucose: Plasma glucose concentration after 2 hours in an oral glucose tolerance test
+- ❤️ DiastolicBloodPressure: Diastolic blood pressure (mm Hg)
+- 📏 TricepsThickness: Triceps skin fold thickness (mm)
+- 💉 SerumInsulin: 2-Hour serum insulin (mu U/ml)
+- ⚖️ BMI: Body mass index (weight in kg/(height in m)^2)
+- 👪 DiabetesPedigree: A function that scores the probability of diabetes based on family history
+- 🗓️ Age: Age in years
+
+Target variable:
+- 🩺 Diabetic: 1 = diabetes diagnosed, 0 = no diabetes diagnosed
 
 ## 🛠️ Installation
 
