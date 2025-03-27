@@ -104,7 +104,7 @@ The application will be accessible at http://localhost:7860 in your web browser.
 
 ## 📈 Model Performance
 
-The models achieve accuracy scores of ~85-90% with different strengths:
+The models achieve accuracy scores of ~77-93% with different strengths:
 - 🌲 Random Forest: Best overall performance with balanced precision and recall
 - 📈 Logistic Regression: Good interpretability and baseline performance
 - 🔄 AdaBoost: Strong performance on difficult cases
