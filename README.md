@@ -142,7 +142,7 @@ Different systems will have different processing times for running all notebooks
 
 - **Ubuntu laptop with Razer Blade specs**: ~12 minutes
   - RTX 4070 GPU
-  - Ryzen 9 8945HZ CPU
+  - Ryzen 9 8945HS CPU
   - 32GB RAM
 
 Your processing time may vary depending on your system's specifications.
