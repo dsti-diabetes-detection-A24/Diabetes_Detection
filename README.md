@@ -150,16 +150,34 @@ Your processing time may vary depending on your system's specifications.
 
 ## 📁 Project Structure
 
-- `app.py` - The Gradio web application
-- `*.pkl` - Trained model files
-- Jupyter Notebooks:
-  - `Notebook.ipynb` - Main project notebook with model comparison
+- `app.py` - The Gradio web application for diabetes prediction
+- `run_notebooks.py` - Script to run all notebooks in sequence
+- `requirements.txt` - List of project dependencies
+- `README.md` - Project documentation
+- `datasets/` - Data files for model training
+  - `TAIPEI_diabetes.csv` - Original dataset
+  - `Processed_data.csv` - Cleaned and processed dataset with engineered features
+- `models/` - Trained model files
+  - `ada_boost_model.pkl` - AdaBoost classifier
+  - `decision_tree_model.pkl` - Decision Tree classifier
+  - `gradient_boosting_model.pkl` - Gradient Boosting classifier
+  - `knn_model.pkl` - K-Nearest Neighbors classifier
+  - `log_model.pkl` - Logistic Regression classifier
+  - `log_scaler.pkl` - Feature scaler for Logistic Regression
+  - `random_forest.pkl` - Random Forest classifier
+  - `rf_scaler.pkl` - Feature scaler for Random Forest
+  - `svm_model.pkl` - Support Vector Machine classifier
+- `notebooks/` - Jupyter notebooks for data analysis and model development
   - `MLProject - DEA.ipynb` - Data exploration and analysis
-  - `MLProject - KNN Algorithm.ipynb` - KNN model implementation
-  - `MLProject_Decision_Tree_A.ipynb` - Decision tree model implementation
-  - `logistic_regression.ipynb` - Logistic regression model
-  - `random forest.ipynb` - Random forest implementation
-  - `svm_model.ipynb` - SVM model implementation
+  - `MLProject - AdaBoost_and_GradientBoosting.ipynb` - AdaBoost and Gradient Boosting models
+  - `MLProject - KNN_Algorithm.ipynb` - KNN implementation
+  - `MLProject - Logistic_Regression.ipynb` - Logistic Regression model
+  - `MLProject - Decision_Tree.ipynb` - Decision Tree implementation
+  - `MLProject - SVM.ipynb` - Support Vector Machine implementation
+  - `MLProject - Random_Forest.ipynb` - Random Forest implementation
+- `image/` - Images for documentation
+  - `README/` - Images used in README
+    - `webapp.png` - Screenshot of the web application
 
 ## 📈 Model Performance
 
@@ -167,11 +185,12 @@ The models achieve accuracy scores of ~77-93% with different strengths:
 - 🌲 Random Forest: Best overall performance with balanced precision and recall
 - 📈 Logistic Regression: Good interpretability and baseline performance
 - 🔄 AdaBoost: Strong performance on difficult cases
+- 🚀 Gradient Boosting: High accuracy with sequential error correction
 - ⚙️ SVM: Effective decision boundary for this classification task
 - 🧠 KNN: Simple but effective for this dataset
 - 🌳 Decision Tree: Good interpretability and visualization capabilities
 
-## 💻 Technologies Used
+## 💻 Main Technologies Used
 
 - 🐍 Python
 - 🧪 Scikit-learn
@@ -187,6 +206,54 @@ The models achieve accuracy scores of ~77-93% with different strengths:
 - 🤝 Implement ensemble methods combining multiple models
 - 🔐 Add user authentication and result storage
 - ☁️ Deploy the application to a cloud platform
+
+## 📝 Git Commit Guidelines
+
+We follow these best practices for Git commit messages to maintain a clean and informative history:
+
+### Commit Message Format
+
+```
+<emoji> <type>(<scope>): <subject>
+```
+
+### Commit Types with Emojis
+
+- ✨ `:sparkles:` - `feat`: A new feature
+- 🐛 `:bug:` - `fix`: A bug fix
+- 📚 `:books:` - `docs`: Documentation only changes
+- 💅 `:nail_polish:` - `style`: Code style changes (formatting, semicolons, etc)
+- 🛠️ `:hammer_and_wrench:` - `refactor`: Code refactoring (no functional changes)
+- 🚀 `:rocket:` - `perf`: Performance improvements
+- ✅ `:white_check_mark:` - `test`: Adding or updating tests
+- 🔧 `:wrench:` - `chore`: Build processes, tooling changes, etc
+- 🗑️ `:wastebasket:` - `chore`: Removing deprecated code
+- ⚙️ `:gear:` - `ci`: CI configuration changes
+- 📦 `:package:` - `build`: Changes related to build system
+- 🔄 `:arrows_counterclockwise:` - `revert`: Revert to a previous commit
+
+### Examples of Good Commit Messages
+
+```
+✨ feat(models): add gradient boosting classifier
+```
+
+```
+📚 docs(readme): update installation instructions
+
+Added conda installation steps and fixed typos in requirements section.
+```
+
+### Tips for Good Commit Messages
+
+1. Keep the subject line concise (50 chars or less)
+2. Use imperative mood in the subject ("add" not "added")
+3. Don't end the subject line with a period
+4. Separate subject from body with a blank line
+5. Use the body to explain what and why, not how
+6. Reference issues and pull requests in the footer
+
+This practice helps maintain a clean history and makes it easier to generate release notes automatically.
 
 ## 📜 License
 
