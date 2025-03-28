@@ -14,6 +14,7 @@ This project uses several machine learning algorithms to predict the likelihood 
   - 🌲 Random Forest
   - 📈 Logistic Regression
   - 🔄 AdaBoost
+  - 🚀 Gradient Boosting
   - 🧠 K-Nearest Neighbors (KNN)
   - ⚙️ Support Vector Machine (SVM)
   - 🌳 Decision Tree
