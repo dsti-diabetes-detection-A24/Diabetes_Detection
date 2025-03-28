@@ -13,6 +13,9 @@ with open("models/svm_model.pkl", "rb") as file:
 with open("models/ada_boost_model.pkl", "rb") as file:
     ada_model = pickle.load(file)
 
+with open("models/gradient_boosting_model.pkl", "rb") as file:
+    gradient_boosting_model = pickle.load(file)
+
 with open("models/log_model.pkl", "rb") as file:
     log_reg_model = pickle.load(file)
 
@@ -33,9 +36,10 @@ with open("models/log_scaler.pkl", "rb") as file:
 
 # Model accuracy dictionary from notebooks
 MODEL_ACCURACIES = {
-    "SVM":  0.88,  
+    "SVM": 0.88,  
     "KNN": 0.89,  
-    "Ada Boost & Gradient Boosting": 0.95, 
+    "Ada Boost": 0.94,
+    "Gradient Boosting": 0.96,
     "Decision Tree": 0.93, 
     "Logistic Regression": 0.86,
     "Random Forest": 0.96, 
@@ -72,6 +76,7 @@ def predictor(
         "SVM",
         "KNN",
         "Ada Boost",
+        "Gradient Boosting",
         "Decision Tree",
         "Logistic Regression",
         "Random Forest",
@@ -89,6 +94,9 @@ def predictor(
 
     elif model == "Ada Boost":
         chosen_model = ada_model
+
+    elif model == "Gradient Boosting": 
+        chosen_model = gradient_boosting_model
 
     elif model == "Decision Tree":
         chosen_model = desc_tree_model
@@ -432,6 +440,7 @@ with gr.Blocks(
                             "Decision Tree",
                             "KNN",
                             "Ada Boost",
+                            "Gradient Boosting",
                             "Random Forest",
                         ],
                         label="Model Name"
