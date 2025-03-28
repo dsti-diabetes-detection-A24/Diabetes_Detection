@@ -41,7 +41,9 @@ Target variable:
 
 ## 🛠️ Installation
 
-This project require *****Python 3.8+*****. 
+This project requires **Python 3.8+**. You can use either pip with a virtual environment or Conda for dependency management.
+
+### Option 1: Using pip and virtual environment
 
 1. Clone this repository:
 
@@ -50,7 +52,7 @@ git clone https://github.com/YoucefLgr/Diabetes_Detection.git
 cd Diabetes_Detection
 ```
 
-2. Create and activate a virtual environment (recommended):
+2. Create and activate a virtual environment:
 
 ```
 python -m venv diabetes_detection_env
@@ -72,6 +74,36 @@ source diabetes_detection_env/bin/activate
 pip install -r requirements.txt
 ```
 
+### Option 2: Using Conda
+
+1. Clone this repository:
+
+```
+git clone https://github.com/YoucefLgr/Diabetes_Detection.git
+cd Diabetes_Detection
+```
+
+2. Create and activate a Conda environment:
+
+```
+conda create --name diabetes_detection python=3.9
+```
+
+On Windows/macOS/Linux:
+```
+conda activate diabetes_detection
+```
+
+3. Install the required packages:
+
+```
+conda install --file requirements.txt
+```
+
+Alternative if you encounter issues with the above:
+```
+pip install -r requirements.txt
+```
 ## 🚀 Usage
 
 ### Running the Web Application
