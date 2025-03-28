@@ -6,6 +6,8 @@ A machine learning-based web application for predicting diabetes risk in women b
 
 This project uses several machine learning algorithms to predict the likelihood of diabetes in women based on key health indicators. The models are trained on a dataset containing health metrics and have been optimized for accuracy and performance.
 
+![Gradio Web App](image/README/webapp.png)
+
 ## ✨ Features
 
 - Multiple trained machine learning models:
