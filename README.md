@@ -91,6 +91,30 @@ The application will be accessible at http://localhost:7860 in your web browser.
 3. 🔮 Click the "Predict" button to get the diabetes risk assessment
 4. 🔄 Use the "Clear" button to reset all fields
 
+## 🚀 Development
+
+### Running All Notebooks
+
+To run all notebooks in the correct sequence (which will update models):
+
+> ⚠️ **Disclaimer**: Be aware of the processing time which may take half an hour or even more depending on your machine.
+
+```bash
+python run_notebooks.py
+``` 
+
+### Expected Processing Times
+
+Different systems will have different processing times for running all notebooks:
+
+- **Ubuntu laptop with Razer Blade specs**: ~12 minutes
+  - RTX 4070 GPU
+  - Ryzen 9 8945HZ CPU
+  - 32GB RAM
+
+Your processing time may vary depending on your system's specifications.
+
+
 ## 📁 Project Structure
 
 - `app.py` - The Gradio web application

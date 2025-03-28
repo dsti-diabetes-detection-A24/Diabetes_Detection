@@ -3,6 +3,8 @@ import numpy as np
 import pickle
 import gradio as gr
 import time
+import warnings
+from sklearn.exceptions import InconsistentVersionWarning
 
 # Load the models
 with open("models/svm_model.pkl", "rb") as file:
@@ -28,6 +30,16 @@ with open("models/random_forest.pkl", "rb") as file:
 with open("models/log_scaler.pkl", "rb") as file:
     log_scaler = pickle.load(file)
 
+
+# Model accuracy dictionary from notebooks
+MODEL_ACCURACIES = {
+    "SVM":  0.88,  
+    "KNN": 0.89,  
+    "Ada Boost & Gradient Boosting": 0.95, 
+    "Decision Tree": 0.93, 
+    "Logistic Regression": 0.86,
+    "Random Forest": 0.96, 
+}
 
 # Prediction function with input validation
 def predictor(
@@ -128,12 +140,20 @@ def predictor(
 
     prediction = chosen_model.predict(params)
 
-    return "✅ Positive" if prediction[0] > 0.5 else "❌ Negative"
+    result = "✅ Positive" if prediction[0] > 0.5 else "❌ Negative"
+
+    # Get model accuracy and format as percentage
+    accuracy = MODEL_ACCURACIES.get(model, 0.0)
+    accuracy_percent = int(accuracy * 100)
+    
+    # Return formatted result with accuracy
+    return f"{result} (Model accuracy: {accuracy_percent}%)"
+
 
 
 # Clear function
 def clear_all():
-    return [None] * 9 + [""]
+    return [None] * 9 + ["", ""]
 
 
 # ------------------------ UI ------------------------
